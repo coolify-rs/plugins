@@ -25,7 +25,12 @@ url=$(field .url)
 
 echo "::group::$id $version: rebuilding $source@$commit in $builder"
 work=$(mktemp -d)
-trap 'rm -rf "$work"' EXIT
+# The builder runs as root, so the files it writes belong to root: hand them back before deleting them.
+cleanup() {
+  docker run --rm -v "$work/src:/build/src" "$builder" chown -R "$(id -u):$(id -g)" /build/src >/dev/null 2>&1 || true
+  rm -rf "$work"
+}
+trap cleanup EXIT
 git init -q "$work/src"
 git -C "$work/src" fetch -q --depth 1 "$source" "$commit"
 git -C "$work/src" -c advice.detachedHead=false checkout -q FETCH_HEAD
