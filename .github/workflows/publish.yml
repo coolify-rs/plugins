@@ -57,8 +57,8 @@ jobs:
 
       - name: Commit dist/ to the index branch
         run: |
-          git config user.name "coolify-rs registry"
-          git config user.email "registry@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           branch=../index-branch
           if git ls-remote --exit-code --heads origin index >/dev/null; then
             git fetch -q --depth 1 origin +refs/heads/index:refs/remotes/origin/index
