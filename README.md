@@ -11,15 +11,15 @@ explains why.
 
 ```
 plugins/<publisher>/<name>.toml   one file per plugin, listing its versions
-dist/index.json                   built from plugins/ by CI after every merge
-dist/index.json.sig               Ed25519 signature of the exact bytes of index.json
+dist/index.json                   on the `index` branch: built from plugins/ by CI after every merge
+dist/index.json.sig               on the `index` branch: Ed25519 signature of the exact bytes of index.json
 scripts/                          what the workflows run
 .github/workflows/review.yml      checks on every pull request
 .github/workflows/publish.yml     builds and signs the index on main
 ```
 
 Instances fetch `dist/index.json` and `dist/index.json.sig` from
-`https://raw.githubusercontent.com/coolify-rs/plugins/main/dist`. Each instance checks the signature against
+`https://raw.githubusercontent.com/coolify-rs/plugins/index/dist`. Each instance checks the signature against
 the public keys compiled into coolify-rs, and then the SHA-256 of every component it downloads.
 
 ## A plugin entry
@@ -132,7 +132,8 @@ When a change to `plugins/` reaches `main`, `publish.yml` runs these steps:
 2. It signs the index with the key in the `REGISTRY_SIGNING_KEY` secret of the `registry-signing`
    environment. Give that environment required reviewers.
 3. It checks the result with `coolify-rs plugin verify-index`, using the keys compiled into coolify-rs.
-4. It commits `dist/`.
+4. It commits `dist/` to the `index` branch. `main` stays protected; the index needs no protection, because
+   instances accept only an index signed by a compiled-in key, and never one older than the one they have.
 
 Instances refresh the index once a day, so a revocation reaches every instance within a day. An admin can
 also refresh it from the catalogue.
@@ -149,7 +150,8 @@ also refresh it from the catalogue.
 
 ### This repository's settings
 
-- `main` is protected: changes come through pull requests that pass the `review` check.
+- `main` is protected: changes come through pull requests that pass the `review` check. The `index` branch
+  is written only by `publish.yml`.
 - The `registry-signing` environment holds `REGISTRY_SIGNING_KEY` and needs a maintainer's approval
   before each publish run uses it.
 - Both workflows pin `COOLIFY_RS_REF` to a coolify-rs commit whose `PRODUCTION_KEYS` contains the key.
