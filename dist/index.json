@@ -1,0 +1,450 @@
+{
+  "format": 1,
+  "generated_at": "2026-11-09T12:49:50.563142182Z",
+  "plugins": [
+    {
+      "id": "coolify-rs/alerts",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": "https://github.com/coolify-rs/coolify-rs",
+          "commit": "1c0c4c2d15d8227c5dfc4c27c23a7d30daa401ad",
+          "toolchain": "rust 1.99.1, target wasm32-wasip2",
+          "builder": "docker.io/library/rust:1.99.1-slim-bookworm@sha256:f2c004e3d2d8b547e8cf7ffbc29205385f4e71d23e53e4e383065db5e9f822cd",
+          "build": {
+            "dir": "plugins",
+            "command": "rustup target add wasm32-wasip2 && cargo build --release --locked --target wasm32-wasip2 -p alerts",
+            "artifact": "target/wasm32-wasip2/release/alerts.wasm"
+          },
+          "sha256": "713bf68d5227a8c73aa7266691badefd11d8204786a348f31f30179e107d3e02",
+          "url": "https://raw.githubusercontent.com/coolify-rs/plugins/5277416d2810e3bd477875a1b5e470957099ca29/components/alerts-0.1.0.wasm",
+          "yanked": false,
+          "manifest": {
+            "id": "coolify-rs/alerts",
+            "name": "Alerts",
+            "version": "0.1.0",
+            "description": "Sends failed deployments, backups, scheduled tasks, unreachable servers and expiring certificates to ntfy, Google Chat, PagerDuty or Opsgenie.",
+            "license": "Apache-2.0",
+            "source": "https://github.com/coolify-rs/coolify-rs/tree/main/plugins/official/alerts",
+            "api": "0.1",
+            "capabilities": {
+              "events": [
+                "deployment.succeeded",
+                "deployment.failed",
+                "backup.succeeded",
+                "backup.succeeded_with_s3_warning",
+                "backup.failed",
+                "backup.missing",
+                "volume_backup.succeeded",
+                "volume_backup.failed",
+                "volume_backup.missing",
+                "volume_backup.recovery_failed",
+                "scheduled_task.succeeded",
+                "scheduled_task.failed",
+                "server.unreachable",
+                "server.reachable",
+                "server.high_disk_usage",
+                "server.docker_cleanup_failed",
+                "container.restart_limit_reached",
+                "ssl.certificates_expiring"
+              ],
+              "storage": true,
+              "routes": true,
+              "http": [
+                "ntfy.sh",
+                "chat.googleapis.com",
+                "events.pagerduty.com",
+                "api.opsgenie.com",
+                "api.eu.opsgenie.com"
+              ],
+              "ui": [
+                {
+                  "slot": "dashboard",
+                  "title": "Alerts",
+                  "path": "/panel"
+                }
+              ]
+            },
+            "settings": [
+              {
+                "key": "ntfy_topic",
+                "label": "ntfy.sh topic",
+                "help": "Alerts are published to this topic on ntfy.sh. Anyone who knows the topic can read it, so treat it as a password. Leave empty to skip ntfy.",
+                "secret": true
+              },
+              {
+                "key": "ntfy_priority",
+                "label": "ntfy priority",
+                "help": "The priority of failures on ntfy. Successes are sent at most at default priority.",
+                "options": [
+                  "min",
+                  "low",
+                  "default",
+                  "high",
+                  "urgent"
+                ],
+                "default": "high"
+              },
+              {
+                "key": "google_chat_webhook",
+                "label": "Google Chat webhook URL",
+                "help": "The incoming webhook of a Google Chat space (https://chat.googleapis.com/v1/spaces/...). Leave empty to skip Google Chat.",
+                "kind": "url",
+                "secret": true
+              },
+              {
+                "key": "pagerduty_routing_key",
+                "label": "PagerDuty integration key",
+                "help": "The routing key of an Events API v2 integration. Failures open incidents; the next success of the same resource resolves them. Leave empty to skip PagerDuty.",
+                "secret": true
+              },
+              {
+                "key": "opsgenie_api_key",
+                "label": "Opsgenie API key",
+                "help": "The key of an API integration. Failures open alerts; the next success of the same resource closes them. Leave empty to skip Opsgenie.",
+                "secret": true
+              },
+              {
+                "key": "opsgenie_region",
+                "label": "Opsgenie region",
+                "help": "eu for accounts on app.eu.opsgenie.com.",
+                "options": [
+                  "us",
+                  "eu"
+                ],
+                "default": "us"
+              },
+              {
+                "key": "coolify_url",
+                "label": "Coolify URL",
+                "help": "This instance's address, such as https://coolify.example.com. When set, alerts link to the deployment, database, task or server in Coolify.",
+                "kind": "url"
+              },
+              {
+                "key": "send_deployments",
+                "label": "Deployments",
+                "help": "failed: failed deployments, and the next success of an application that failed. all: every deployment.",
+                "options": [
+                  "failed",
+                  "all",
+                  "off"
+                ],
+                "default": "failed"
+              },
+              {
+                "key": "send_backups",
+                "label": "Backups",
+                "help": "Database and storage backups: failed, missing, not uploaded to S3, or a failed recovery. all: successes too.",
+                "options": [
+                  "failed",
+                  "all",
+                  "off"
+                ],
+                "default": "failed"
+              },
+              {
+                "key": "send_tasks",
+                "label": "Scheduled tasks",
+                "options": [
+                  "failed",
+                  "all",
+                  "off"
+                ],
+                "default": "failed"
+              },
+              {
+                "key": "send_servers",
+                "label": "Servers",
+                "help": "Unreachable servers (and their return), high disk usage and failed Docker cleanups.",
+                "options": [
+                  "failed",
+                  "all",
+                  "off"
+                ],
+                "default": "failed"
+              },
+              {
+                "key": "send_containers",
+                "label": "Restart limits",
+                "help": "Containers that reached their restart limit.",
+                "options": [
+                  "on",
+                  "off"
+                ],
+                "default": "on"
+              },
+              {
+                "key": "send_certificates",
+                "label": "Certificates",
+                "help": "SSL certificates of databases that expire soon.",
+                "options": [
+                  "on",
+                  "off"
+                ],
+                "default": "on"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "coolify-rs/delivery-metrics",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": "https://github.com/coolify-rs/coolify-rs",
+          "commit": "b6af3f06152cc145612b44699883cb9606e9022d",
+          "toolchain": "rust 1.99.1, target wasm32-wasip2",
+          "builder": "docker.io/library/rust:1.99.1-slim-bookworm@sha256:f2c004e3d2d8b547e8cf7ffbc29205385f4e71d23e53e4e383065db5e9f822cd",
+          "build": {
+            "dir": "plugins",
+            "command": "rustup target add wasm32-wasip2 && cargo build --release --locked --target wasm32-wasip2 -p delivery-metrics",
+            "artifact": "target/wasm32-wasip2/release/delivery_metrics.wasm"
+          },
+          "sha256": "9771840f27788c8d1a3c0f88be10663aa11811d897731dd12af0b1142fb3473f",
+          "url": "https://raw.githubusercontent.com/coolify-rs/plugins/5277416d2810e3bd477875a1b5e470957099ca29/components/delivery-metrics-0.1.0.wasm",
+          "yanked": false,
+          "manifest": {
+            "id": "coolify-rs/delivery-metrics",
+            "name": "Delivery metrics",
+            "version": "0.1.0",
+            "description": "The four DORA metrics per team and per application, with CSV exports of metrics, deployments and inventory.",
+            "license": "Apache-2.0",
+            "source": "https://github.com/coolify-rs/coolify-rs/tree/main/plugins/official/delivery-metrics",
+            "api": "0.1",
+            "capabilities": {
+              "events": [
+                "deployment.succeeded",
+                "deployment.failed"
+              ],
+              "storage": true,
+              "routes": true,
+              "resources": [
+                "projects",
+                "applications",
+                "services",
+                "databases",
+                "servers"
+              ],
+              "ui": [
+                {
+                  "slot": "dashboard",
+                  "title": "Delivery metrics",
+                  "path": "/panels/dashboard"
+                },
+                {
+                  "slot": "application",
+                  "title": "Delivery metrics",
+                  "path": "/panels/application"
+                }
+              ]
+            },
+            "settings": [
+              {
+                "key": "default_window",
+                "label": "Default window (days)",
+                "help": "The window the panels and exports use when a request names none.",
+                "options": [
+                  "30",
+                  "90"
+                ],
+                "default": "30"
+              },
+              {
+                "key": "include_previews",
+                "label": "Count preview deployments",
+                "help": "Whether pull request preview deployments count towards the metrics. They are always recorded.",
+                "options": [
+                  "no",
+                  "yes"
+                ],
+                "default": "no"
+              },
+              {
+                "key": "environments",
+                "label": "Environments",
+                "help": "Only count deployments to these environments, separated by commas (for example production). Empty counts every environment."
+              },
+              {
+                "key": "retention_days",
+                "label": "Retention (days)",
+                "help": "How long deployments are kept, from 7 to 730. Older ones are deleted as new ones arrive.",
+                "default": "180"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "coolify-rs/deploy-chains",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": "https://github.com/coolify-rs/coolify-rs",
+          "commit": "351b841c5f92a480d83b117856bb918c0645b0fb",
+          "toolchain": "rust 1.99.1, target wasm32-wasip2",
+          "builder": "docker.io/library/rust:1.99.1-slim-bookworm@sha256:f2c004e3d2d8b547e8cf7ffbc29205385f4e71d23e53e4e383065db5e9f822cd",
+          "build": {
+            "dir": "plugins",
+            "command": "rustup target add wasm32-wasip2 && cargo build --release --locked --target wasm32-wasip2 -p deploy-chains",
+            "artifact": "target/wasm32-wasip2/release/deploy_chains.wasm"
+          },
+          "sha256": "280a9b7a588d9e873a3541b6d4471cd1175d1a7795e25771525eef021ff940c2",
+          "url": "https://raw.githubusercontent.com/coolify-rs/plugins/5277416d2810e3bd477875a1b5e470957099ca29/components/deploy-chains-0.1.0.wasm",
+          "yanked": false,
+          "manifest": {
+            "id": "coolify-rs/deploy-chains",
+            "name": "Deploy chains",
+            "version": "0.1.0",
+            "description": "Deploys the applications that depend on an application after it deploys successfully.",
+            "license": "Apache-2.0",
+            "source": "https://github.com/coolify-rs/coolify-rs/tree/main/plugins/official/deploy-chains",
+            "api": "0.1",
+            "capabilities": {
+              "events": [
+                "deployment.succeeded"
+              ],
+              "storage": true,
+              "routes": true,
+              "resources": [
+                "applications"
+              ],
+              "deploy": true,
+              "ui": [
+                {
+                  "slot": "application",
+                  "title": "Deploy chain",
+                  "path": "/panels/application"
+                },
+                {
+                  "slot": "dashboard",
+                  "title": "Deploy chains",
+                  "path": "/panels/overview"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "coolify-rs/deploy-stats",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": "https://github.com/coolify-rs/coolify-rs",
+          "commit": "9fe258c338e454c17a696d27d8472d814f6950ad",
+          "toolchain": "rust 1.99.1, target wasm32-wasip2",
+          "builder": "docker.io/library/rust:1.99.1-slim-bookworm@sha256:f2c004e3d2d8b547e8cf7ffbc29205385f4e71d23e53e4e383065db5e9f822cd",
+          "build": {
+            "dir": "plugins",
+            "command": "rustup target add wasm32-wasip2 && cargo build --release --locked --target wasm32-wasip2 -p deploy-stats",
+            "artifact": "target/wasm32-wasip2/release/deploy_stats.wasm"
+          },
+          "sha256": "d8f0be972046850b952df5243a43f71a512442b6a712cdd1865e4414fb06b9e5",
+          "url": "https://raw.githubusercontent.com/coolify-rs/plugins/5277416d2810e3bd477875a1b5e470957099ca29/components/deploy-stats-0.1.0.wasm",
+          "yanked": false,
+          "manifest": {
+            "id": "coolify-rs/deploy-stats",
+            "name": "Deploy stats",
+            "version": "0.1.0",
+            "description": "Counts successful and failed deployments per team and serves the totals.",
+            "license": "Apache-2.0",
+            "source": "https://github.com/coolify-rs/coolify-rs/tree/main/plugins/examples/deploy-stats",
+            "api": "0.1",
+            "capabilities": {
+              "events": [
+                "deployment.succeeded",
+                "deployment.failed"
+              ],
+              "storage": true,
+              "routes": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "coolify-rs/healthchecks",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "source": "https://github.com/coolify-rs/coolify-rs",
+          "commit": "1c0c4c2d15d8227c5dfc4c27c23a7d30daa401ad",
+          "toolchain": "rust 1.99.1, target wasm32-wasip2",
+          "builder": "docker.io/library/rust:1.99.1-slim-bookworm@sha256:f2c004e3d2d8b547e8cf7ffbc29205385f4e71d23e53e4e383065db5e9f822cd",
+          "build": {
+            "dir": "plugins",
+            "command": "rustup target add wasm32-wasip2 && cargo build --release --locked --target wasm32-wasip2 -p healthchecks",
+            "artifact": "target/wasm32-wasip2/release/healthchecks.wasm"
+          },
+          "sha256": "3777001ccd926a84b3f7cff427cfe2da9a90b9e949ff1c932e9ea0a6cf27aa1e",
+          "url": "https://raw.githubusercontent.com/coolify-rs/plugins/5277416d2810e3bd477875a1b5e470957099ca29/components/healthchecks-0.1.0.wasm",
+          "yanked": false,
+          "manifest": {
+            "id": "coolify-rs/healthchecks",
+            "name": "Healthchecks.io",
+            "version": "0.1.0",
+            "description": "Pings Healthchecks.io for every scheduled task and database or storage backup, so a job that silently stops running raises an alarm.",
+            "license": "Apache-2.0",
+            "source": "https://github.com/coolify-rs/coolify-rs/tree/main/plugins/official/healthchecks",
+            "api": "0.1",
+            "capabilities": {
+              "events": [
+                "scheduled_task.succeeded",
+                "scheduled_task.failed",
+                "backup.succeeded",
+                "backup.succeeded_with_s3_warning",
+                "backup.failed",
+                "backup.missing",
+                "volume_backup.succeeded",
+                "volume_backup.failed",
+                "volume_backup.missing",
+                "volume_backup.recovery_failed"
+              ],
+              "storage": true,
+              "routes": true,
+              "http": [
+                "hc-ping.com"
+              ],
+              "ui": [
+                {
+                  "slot": "dashboard",
+                  "title": "Healthchecks.io",
+                  "path": "/panel"
+                }
+              ]
+            },
+            "settings": [
+              {
+                "key": "ping_key",
+                "label": "Project ping key",
+                "help": "From the project's Settings → Ping key on Healthchecks.io. Each job pings https://hc-ping.com/<ping key>/<slug>.",
+                "secret": true,
+                "required": true
+              },
+              {
+                "key": "create",
+                "label": "Create checks automatically",
+                "help": "yes: the first ping of a job creates its check (?create=1). no: only jobs whose check you created are pinged.",
+                "options": [
+                  "yes",
+                  "no"
+                ],
+                "default": "yes"
+              },
+              {
+                "key": "slug_prefix",
+                "label": "Slug prefix",
+                "help": "Checks are named <prefix>-task-<uuid>, <prefix>-backup-<uuid>-<database> and <prefix>-volume-<resource>-<volume>.",
+                "default": "coolify"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
