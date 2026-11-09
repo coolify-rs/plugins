@@ -1,5 +1,7 @@
 # After a change to plugins/ is merged: build index.json, sign it, verify it with the keys compiled into
-# coolify-rs, and commit dist/. Instances fetch dist/index.json and dist/index.json.sig from main.
+# coolify-rs, and commit it to the `index` branch. Instances fetch dist/index.json and dist/index.json.sig
+# from that branch. main stays protected; the index needs no branch protection because instances accept only
+# an index signed by a compiled-in key, and never one older than the index they have.
 name: publish
 
 on:
@@ -53,10 +55,21 @@ jobs:
       - name: Verify with the keys coolify-rs ships
         run: coolify-rs plugin verify-index dist
 
-      - name: Commit dist/
+      - name: Commit dist/ to the index branch
         run: |
           git config user.name "coolify-rs registry"
           git config user.email "registry@users.noreply.github.com"
-          git add dist/index.json dist/index.json.sig
-          git commit -m "Index for ${GITHUB_SHA::12}"
-          git push
+          branch=../index-branch
+          if git ls-remote --exit-code --heads origin index >/dev/null; then
+            git fetch -q --depth 1 origin +refs/heads/index:refs/remotes/origin/index
+            git worktree add -q -B index "$branch" origin/index
+          else
+            git worktree add -q --detach "$branch"
+            git -C "$branch" checkout -q --orphan index
+            git -C "$branch" rm -rqf .
+          fi
+          mkdir -p "$branch/dist"
+          cp dist/index.json dist/index.json.sig "$branch/dist/"
+          git -C "$branch" add dist/index.json dist/index.json.sig
+          git -C "$branch" commit -qm "Index for ${GITHUB_SHA::12}"
+          git -C "$branch" push -q origin index
