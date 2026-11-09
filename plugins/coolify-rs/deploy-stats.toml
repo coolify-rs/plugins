@@ -8,7 +8,7 @@ commit = "9fe258c338e454c17a696d27d8472d814f6950ad"
 toolchain = "rust 1.99.1, target wasm32-wasip2"
 builder = "docker.io/library/rust:1.99.1-slim-bookworm@sha256:f2c004e3d2d8b547e8cf7ffbc29205385f4e71d23e53e4e383065db5e9f822cd"
 sha256 = "d8f0be972046850b952df5243a43f71a512442b6a712cdd1865e4414fb06b9e5"
-url = "https://github.com/coolify-rs/plugins/releases/download/deploy-stats-v0.1.0/deploy_stats.wasm"
+url = "https://raw.githubusercontent.com/coolify-rs/plugins/5277416d2810e3bd477875a1b5e470957099ca29/components/deploy-stats-0.1.0.wasm"
 
 [versions.build]
 dir = "plugins"

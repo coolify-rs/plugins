@@ -8,7 +8,7 @@ commit = "1c0c4c2d15d8227c5dfc4c27c23a7d30daa401ad"
 toolchain = "rust 1.99.1, target wasm32-wasip2"
 builder = "docker.io/library/rust:1.99.1-slim-bookworm@sha256:f2c004e3d2d8b547e8cf7ffbc29205385f4e71d23e53e4e383065db5e9f822cd"
 sha256 = "713bf68d5227a8c73aa7266691badefd11d8204786a348f31f30179e107d3e02"
-url = "https://github.com/coolify-rs/plugins/releases/download/alerts-v0.1.0/alerts.wasm"
+url = "https://raw.githubusercontent.com/coolify-rs/plugins/5277416d2810e3bd477875a1b5e470957099ca29/components/alerts-0.1.0.wasm"
 
 [versions.build]
 dir = "plugins"
